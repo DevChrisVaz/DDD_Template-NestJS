@@ -24,20 +24,38 @@ This template follows the principles of **DDD** and **Hexagonal Architecture**, 
 
 src/ ├── domain/ │ ├── models/ │ ├── repositories/ │ └── services/ ├── application/ │ ├── use-cases/ │ └── dto/ ├── infrastructure/ │ ├── database/ │ ├── services/ │ └── config/ ├── interfaces/ │ ├── http/ │ └── graphql/ ├── shared/ │ └── utils/ └── main.ts
 
-
 ### Layer Explanation
 
-| Layer         | Description                                             |
-|---------------|---------------------------------------------------------|
-| `domain`      | Pure business logic — entities, aggregates, services.   |
-| `application` | Coordinates domain logic with use cases.                |
+| Layer            | Description                                           |
+| ---------------- | ----------------------------------------------------- |
+| `domain`         | Pure business logic — entities, aggregates, services. |
+| `application`    | Coordinates domain logic with use cases.              |
 | `infrastructure` | External tools (DB, cache, APIs).                     |
-| `interfaces`  | Input/output adapters like REST, GraphQL, CLI.          |
-| `shared`      | Reusable utilities, base classes, constants, etc.       |
+| `interfaces`     | Input/output adapters like REST, GraphQL, CLI.        |
+| `shared`         | Reusable utilities, base classes, constants, etc.     |
 
 ---
 
 ## 🚀 Getting Started
+
+Prepare the project for commitlint:
+
+pnpm husky init
+
+# Add commit message linting to commit-msg hook
+
+echo "pnpm dlx commitlint --edit \$1" > .husky/commit-msg
+
+# Windows users should use ` to escape dollar signs
+
+echo "pnpm dlx commitlint --edit `$1" > .husky/commit-msg
+
+### ⚡ Comando para Hacer un Commit
+
+Para hacer un commit, usa el siguiente comando:
+
+````bash
+pnpm commit
 
 ### Prerequisites
 
@@ -80,3 +98,4 @@ npm run start:dev     # Run in watch mode
 npm run test          # Run tests
 npm run lint          # Lint the codebase
 npm run build         # Compile to dist/
+````
