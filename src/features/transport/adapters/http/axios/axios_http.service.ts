@@ -1,39 +1,28 @@
-import { Inject, Injectable } from '@nestjs/common';
 import { AxiosRequestConfig, AxiosResponse, isAxiosError, AxiosInstance } from 'axios';
 import { HTTPService, HTTPResult, HTTPMethod } from '../../../ports/http.service.port';
+import { TCallOptions } from 'src/features/transport/ports/types/call_options.type';
+import { TRequestOptions } from 'src/features/transport/ports/types/request_options.type';
 
-@Injectable()
 export class AxiosHTTPService implements HTTPService {
-  constructor(@Inject('Axios') private client: AxiosInstance) {}
+  constructor(private client: AxiosInstance) {}
 
-  async call<T, E>(
-    method: HTTPMethod,
-    url: string,
-    {
-      body,
-      params,
-      options,
-    }: {
-      body?: Record<string, any>;
-      params?: Record<string, any>;
-      options?: AxiosRequestConfig;
-    },
-  ): Promise<HTTPResult<T>> {
+  async call<T, E>(method: HTTPMethod, url: string, { body, params, options }: TRequestOptions): Promise<HTTPResult<T>> {
+    const axiosOptions = this._mapAxiosOptions(options);
     switch (method) {
       case HTTPMethod.GET:
-        return this._get<T, E>(url, params, options);
+        return this._get<T, E>(url, { params, options: axiosOptions });
       case HTTPMethod.POST:
-        return this._post<T, E>(url, { body, params, options });
+        return this._post<T, E>(url, { body, params, options: axiosOptions });
       case HTTPMethod.PUT:
-        return this._put<T, E>(url, { body, params, options });
+        return this._put<T, E>(url, { body, params, options: axiosOptions });
       case HTTPMethod.DELETE:
-        return this._delete<T, E>(url, { params, options });
+        return this._delete<T, E>(url, { params, options: axiosOptions });
       case HTTPMethod.PATCH:
-        return this._patch<T, E>(url, { body, params, options });
+        return this._patch<T, E>(url, { body, params, options: axiosOptions });
     }
   }
 
-  async _get<T, E>(url: string, params?: Record<string, any>, options?: AxiosRequestConfig): Promise<HTTPResult<T, E>> {
+  private async _get<T, E>(url: string, { options, params }: { params?: Record<string, any>; options?: AxiosRequestConfig }): Promise<HTTPResult<T, E>> {
     try {
       const response = await this.client.get<T>(url, {
         params,
@@ -49,7 +38,7 @@ export class AxiosHTTPService implements HTTPService {
     }
   }
 
-  async _post<T, E>(
+  private async _post<T, E>(
     url: string,
     {
       body,
@@ -77,7 +66,7 @@ export class AxiosHTTPService implements HTTPService {
     }
   }
 
-  async _put<T, E>(
+  private async _put<T, E>(
     url: string,
     {
       body,
@@ -105,7 +94,7 @@ export class AxiosHTTPService implements HTTPService {
     }
   }
 
-  async _delete<T, E>(
+  private async _delete<T, E>(
     url: string,
     {
       params,
@@ -131,7 +120,7 @@ export class AxiosHTTPService implements HTTPService {
     }
   }
 
-  async _patch<T, E>(
+  private async _patch<T, E>(
     url: string,
     {
       body,
@@ -159,7 +148,7 @@ export class AxiosHTTPService implements HTTPService {
     }
   }
 
-  _mapResponse<T, E>(response?: AxiosResponse): HTTPResult<T, E> {
+  private _mapResponse<T, E>(response?: AxiosResponse): HTTPResult<T, E> {
     if (response != null && response.status < 500) {
       if (response.status >= 200 && response.status <= 300) {
         return {
@@ -178,5 +167,13 @@ export class AxiosHTTPService implements HTTPService {
         message: 'Ocurrió un error inesperado',
       };
     }
+  }
+
+  private _mapAxiosOptions(options?: TCallOptions): AxiosRequestConfig {
+    const axiosOptions: AxiosRequestConfig = {
+      ...options,
+    };
+
+    return axiosOptions;
   }
 }

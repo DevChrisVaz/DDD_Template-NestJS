@@ -1,3 +1,5 @@
+import { TRequestOptions } from './types/request_options.type';
+
 export enum HTTPMethod {
   GET,
   POST,
@@ -23,13 +25,7 @@ type Error = {
 export type HTTPResult<T = void, E = void> = Succeeded<T> | Failed<E> | Error;
 
 export abstract class HTTPService {
-  abstract call<T = void, E = void>(
-    method: HTTPMethod,
-    url: string,
-    extra?: {
-      body?: Record<string, any>;
-      params?: Record<string, any>;
-      options?: any;
-    },
-  ): Promise<HTTPResult<T, E>>;
+  abstract call<T = void, E = void>(method: HTTPMethod.GET, url: string, options?: Omit<TRequestOptions, 'body'>): Promise<HTTPResult<T, E>>;
+
+  abstract call<T = void, E = void>(method: Exclude<HTTPMethod, HTTPMethod.GET>, url: string, options?: TRequestOptions): Promise<HTTPResult<T, E>>;
 }
