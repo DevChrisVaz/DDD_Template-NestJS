@@ -12,8 +12,8 @@ export abstract class InMemoryRepository<T extends object> implements Repository
       });
     }
 
-    return await new Promise<T[]>(() => {
-      return this._registries;
+    return await new Promise<T[]>((resolve) => {
+      return resolve(this._registries);
     });
   }
 
